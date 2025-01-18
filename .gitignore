@@ -1,2 +1,5 @@
 *__pycahce__*
 *.pyc
+training/football-players-detection-1/train
+training/football-players-detection-1/test
+training/football-players-detection-1/valid
