@@ -73,6 +73,19 @@ The system is composed of several components that work together to process and a
   - `interpolate_ball_positions`: Interpolates ball positions in the tracks.
   - `draw_annotations`: Draws object tracks on the video frames.
 
+**Implementation Details**:
+The `Tracker` class uses the YOLO model for object detection and the ByteTrack algorithm for tracking. It includes methods for detecting objects in video frames, interpolating missing ball positions, and drawing annotations on the video frames.
+
+- **`__init__(self, model_path)`**: Initializes the tracker with a pre-trained YOLO model.
+- **`add_position_to_tracks(self, tracks)`**: Adds positions to the tracks based on bounding box information.
+- **`interpolate_ball_positions(self, ball_positions)`**: Interpolates missing ball positions using pandas DataFrame.
+- **`detect_frames(self, frames)`**: Detects objects in video frames in batches.
+- **`get_object_tracks(self, frames, read_from_stub=False, stub_path=None)`**: Retrieves object tracks from video frames or stub files.
+- **`draw_ellipse(self, frame, bbox, color, track_id=None)`**: Draws an ellipse around the tracked object.
+- **`draw_traingle(self, frame, bbox, color)`**: Draws a triangle to indicate ball possession.
+- **`draw_team_ball_control(self, frame, frame_num, team_ball_control)`**: Draws a semi-transparent rectangle showing team ball control statistics.
+- **`draw_annotations(self, video_frames, tracks, team_ball_control)`**: Draws all annotations on the video frames.
+
 #### 5.2.3. Camera Movement Estimator
 - **Class**: `CameraMovementEstimator`
 - **Functions**:
@@ -80,10 +93,90 @@ The system is composed of several components that work together to process and a
   - `add_adjust_positions_to_tracks`: Adjusts track positions based on camera movement.
   - `draw_camera_movement`: Draws camera movement annotations on the video frames.
 
+**Implementation Details**:
+The `CameraMovementEstimator` class uses optical flow to estimate camera movement between frames. It includes methods for initializing feature points, estimating camera movement, and adjusting object positions based on the estimated movement.
+
+- **`__init__(self, frame)`**: Initializes the camera movement estimator with the first frame of the video.
+- **`add_adjust_positions_to_tracks(self, tracks, camera_movement_per_frame)`**: Adjusts track positions based on camera movement for each frame.
+- **`get_camera_movement(self, frames, read_from_stub=False, stub_path=None)`**: Estimates camera movement for each frame using optical flow.
+- **`draw_camera_movement(self, frames, camera_movement_per_frame)`**: Draws camera movement annotations on the video frames.
+
+**Method Details**:
+- **`__init__(self, frame)`**:
+  - **Description**: Initializes the camera movement estimator with the first frame of the video.
+  - **Parameters**:
+    - `frame`: The first frame of the video.
+  - **Implementation**:
+    - Converts the first frame to grayscale.
+    - Initializes feature points using the Shi-Tomasi corner detection method.
+    - Sets parameters for the Lucas-Kanade optical flow algorithm.
+
+- **`add_adjust_positions_to_tracks(self, tracks, camera_movement_per_frame)`**:
+  - **Description**: Adjusts track positions based on camera movement for each frame.
+  - **Parameters**:
+    - `tracks`: A dictionary of object tracks.
+    - `camera_movement_per_frame`: A list of camera movement vectors for each frame.
+  - **Implementation**:
+    - Iterates through each object and frame in the tracks.
+    - Adjusts the position of each object based on the camera movement vector for the corresponding frame.
+
+- **`get_camera_movement(self, frames, read_from_stub=False, stub_path=None)`**:
+  - **Description**: Estimates camera movement for each frame using optical flow.
+  - **Parameters**:
+    - `frames`: A list of video frames.
+    - `read_from_stub`: Boolean indicating whether to read from a stub file.
+    - `stub_path`: Path to the stub file.
+  - **Returns**: A list of camera movement vectors for each frame.
+  - **Implementation**:
+    - Converts the first frame to grayscale and initializes feature points.
+    - Iterates through each subsequent frame, calculating optical flow to estimate camera movement.
+    - Stores the camera movement vectors and optionally saves them to a stub file.
+
+- **`draw_camera_movement(self, frames, camera_movement_per_frame)`**:
+  - **Description**: Draws camera movement annotations on the video frames.
+  - **Parameters**:
+    - `frames`: A list of video frames.
+    - `camera_movement_per_frame`: A list of camera movement vectors for each frame.
+  - **Returns**: A list of video frames with camera movement annotations.
+  - **Implementation**:
+    - Iterates through each frame and overlays camera movement information as text annotations.
+
 #### 5.2.4. View Transformer
 - **Class**: `ViewTransformer`
 - **Functions**:
   - `add_transformed_position_to_tracks`: Transforms and adds positions to the tracks.
+
+**Implementation Details**:
+The `ViewTransformer` class uses perspective transformation to map points from the video frame to a standard court view. It includes methods for transforming individual points and adding transformed positions to the tracks.
+
+- **`__init__(self)`**: Initializes the view transformer with the court dimensions and perspective transformation matrix.
+- **`transform_point(self, point)`**: Transforms a point from the video frame to the standard court view.
+- **`add_transformed_position_to_tracks(self, tracks)`**: Transforms and adds positions to the tracks.
+
+**Method Details**:
+- **`__init__(self)`**:
+  - **Description**: Initializes the view transformer with the court dimensions and perspective transformation matrix.
+  - **Implementation**:
+    - Defines the court dimensions and the pixel coordinates of the court vertices in the video frame.
+    - Calculates the perspective transformation matrix using OpenCV's `getPerspectiveTransform` function.
+
+- **`transform_point(self, point)`**:
+  - **Description**: Transforms a point from the video frame to the standard court view.
+  - **Parameters**:
+    - `point`: A point in the video frame.
+  - **Returns**: The transformed point in the standard court view, or `None` if the point is outside the court.
+  - **Implementation**:
+    - Checks if the point is inside the court using OpenCV's `pointPolygonTest` function.
+    - Transforms the point using OpenCV's `perspectiveTransform` function.
+
+- **`add_transformed_position_to_tracks(self, tracks)`**:
+  - **Description**: Transforms and adds positions to the tracks.
+  - **Parameters**:
+    - `tracks`: A dictionary of object tracks.
+  - **Implementation**:
+    - Iterates through each object and frame in the tracks.
+    - Transforms the adjusted position of each object to the standard court view.
+    - Adds the transformed position to the track information.
 
 #### 5.2.5. Speed and Distance Estimator
 - **Class**: `SpeedAndDistance_Estimator`
@@ -91,16 +184,74 @@ The system is composed of several components that work together to process and a
   - `add_speed_and_distance_to_tracks`: Adds speed and distance information to the tracks.
   - `draw_speed_and_distance`: Draws speed and distance annotations on the video frames.
 
+**Implementation Details**:
+The `SpeedAndDistance_Estimator` class calculates the speed and distance covered by players over a series of frames. It includes methods for adding speed and distance information to the tracks and drawing this information on the video frames.
+
+- **`__init__(self)`**: Initializes the speed and distance estimator with default parameters.
+- **`add_speed_and_distance_to_tracks(self, tracks)`**: Adds speed and distance information to the tracks.
+- **`draw_speed_and_distance(self, frames, tracks)`**: Draws speed and distance annotations on the video frames.
+
+**Method Details**:
+- **`__init__(self)`**:
+  - **Description**: Initializes the speed and distance estimator with default parameters.
+  - **Implementation**:
+    - Sets the frame window and frame rate for calculating speed and distance.
+
+- **`add_speed_and_distance_to_tracks(self, tracks)`**:
+  - **Description**: Adds speed and distance information to the tracks.
+  - **Parameters**:
+    - `tracks`: A dictionary of object tracks.
+  - **Implementation**:
+    - Iterates through each object and frame in the tracks.
+    - Calculates the distance covered and speed for each player over a series of frames.
+    - Adds the speed and distance information to the track information.
+
+- **`draw_speed_and_distance(self, frames, tracks)`**:
+  - **Description**: Draws speed and distance annotations on the video frames.
+  - **Parameters**:
+    - `frames`: A list of video frames.
+    - `tracks`: A dictionary of object tracks.
+  - **Returns**: A list of video frames with speed and distance annotations.
+  - **Implementation**:
+    - Iterates through each frame and overlays speed and distance information as text annotations.
+
 #### 5.2.6. Team Assigner
 - **Class**: `TeamAssigner`
 - **Functions**:
   - `assign_team_color`: Assigns team colors to players.
   - `get_player_team`: Determines the team of a player based on their position.
 
+**Implementation Details**:
+The `TeamAssigner` class uses KMeans clustering to assign team colors to players based on the colors of their uniforms. It includes methods for extracting player colors from video frames, clustering these colors, and assigning teams based on the clusters.
+
+- **`__init__(self)`**: Initializes the team assigner with empty dictionaries for team colors and player-team mappings.
+- **`get_clustering_model(self, image)`**: Reshapes the image to a 2D array and performs KMeans clustering with 2 clusters.
+- **`get_player_color(self, frame, bbox)`**: Extracts the top half of the player's bounding box from the frame, performs KMeans clustering, and determines the player's color.
+- **`assign_team_color(self, frame, player_detections)`**: Extracts colors for all detected players, performs KMeans clustering to assign team colors, and stores the team colors.
+- **`get_player_team(self, frame, player_bbox, player_id)`**: Determines the team of a player based on their color and assigns the team to the player.
+
 #### 5.2.7. Player Ball Assigner
 - **Class**: `PlayerBallAssigner`
 - **Functions**:
   - `assign_ball_to_player`: Determines which player has possession of the ball.
+
+**Implementation Details**:
+The `PlayerBallAssigner` class uses distance measurements to determine which player is closest to the ball and assigns ball possession accordingly. It includes methods for calculating distances between players and the ball and assigning ball possession based on these distances.
+
+- **`__init__(self)`**: Initializes the player ball assigner with a maximum distance threshold for ball possession.
+- **`assign_ball_to_player(self, players, ball_bbox)`**: Determines which player has possession of the ball based on the distance between the player and the ball.
+
+**Method Details**:
+- **`assign_ball_to_player(self, players, ball_bbox)`**:
+  - **Description**: Determines which player has possession of the ball based on the distance between the player and the ball.
+  - **Parameters**:
+    - `players`: A dictionary of player detections with bounding boxes.
+    - `ball_bbox`: The bounding box of the ball.
+  - **Returns**: The ID of the player closest to the ball, or -1 if no player is within the maximum distance threshold.
+  - **Implementation**:
+    - Extracts the center position of the ball from its bounding box.
+    - Iterates through each player and calculates the distance from the player's bounding box to the ball's center position.
+    - Assigns the ball to the player with the minimum distance, provided the distance is below the maximum threshold.
 
 #### 5.2.8. Video Annotator
 - **Functions**:
@@ -112,9 +263,21 @@ The system is composed of several components that work together to process and a
 - **Function**: `save_video`
 - **Description**: Saves the annotated video to a file.
 
-### 5.3. Workflow Diagram
-
-![workflow diagram](img/processing_pipeline.png)
+### 5.3. Architecture Diagram
+```plantuml
+@startuml
+package "Video Processing System" {
+    [Video Reader] --> [Tracker]
+    [Tracker] --> [Camera Movement Estimator]
+    [Camera Movement Estimator] --> [View Transformer]
+    [View Transformer] --> [Speed and Distance Estimator]
+    [Speed and Distance Estimator] --> [Team Assigner]
+    [Team Assigner] --> [Player Ball Assigner]
+    [Player Ball Assigner] --> [Video Annotator]
+    [Video Annotator] --> [Video Saver]
+}
+@enduml
+```
 
 ## 6. Runtime View
 The main function orchestrates the processing pipeline, calling each component in sequence to process the video and generate the annotated output.
