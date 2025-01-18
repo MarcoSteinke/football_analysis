@@ -1,8 +1,4 @@
-# Documentation for 
-
-main.py
-
-
+# Documentation
 
 ## Table of Contents
 1. [Introduction and Goals](#1-introduction-and-goals)
