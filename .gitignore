@@ -5,3 +5,5 @@ training/football-players-detection-1/test
 training/football-players-detection-1/valid
 training/football-players-detection-1/football-players-detection-1
 .env
+input_videos
+output_videos
