@@ -264,20 +264,10 @@ The `PlayerBallAssigner` class uses distance measurements to determine which pla
 - **Description**: Saves the annotated video to a file.
 
 ### 5.3. Architecture Diagram
-```plantuml
-@startuml
-package "Video Processing System" {
-    [Video Reader] --> [Tracker]
-    [Tracker] --> [Camera Movement Estimator]
-    [Camera Movement Estimator] --> [View Transformer]
-    [View Transformer] --> [Speed and Distance Estimator]
-    [Speed and Distance Estimator] --> [Team Assigner]
-    [Team Assigner] --> [Player Ball Assigner]
-    [Player Ball Assigner] --> [Video Annotator]
-    [Video Annotator] --> [Video Saver]
-}
-@enduml
-```
+
+Right now the architecture is just a pipeline as seen in the following diagram:
+
+![](img/processing_pipeline.png)
 
 ## 6. Runtime View
 The main function orchestrates the processing pipeline, calling each component in sequence to process the video and generate the annotated output.
