@@ -295,6 +295,40 @@ The project is intended to be run as a standalone script on a machine with the n
 - Potential performance bottlenecks with large video files or high-resolution frames.
 
 ## 12. Glossary
-- **Track**: The path or trajectory of an object (player or ball) in the video.
-- **Stub File**: A file containing precomputed data used to speed up processing.
-- **Annotation**: Visual markers added to the video frames to highlight important information.
+
+### Technical Expressions
+
+| Term                          | Definition                                                                                   |
+|-------------------------------|----------------------------------------------------------------------------------------------|
+| **AI Model**                  | A pre-trained artificial intelligence model used for tasks such as object tracking and estimation. |
+| **Annotation**                | Visual markers added to the video frames to highlight important information.                 |
+| **Bounding Box (bbox)**       | A rectangular box that encloses an object in an image or video frame.                        |
+| **ByteTrack**                 | An algorithm used for tracking objects across video frames.                                  |
+| **Camera Movement Estimator** | A component that estimates and adjusts for camera movement in video frames.                  |
+| **Clustering**                | A machine learning technique used to group similar data points together.                     |
+| **Distance Measurement**      | The calculation of the distance between two points.                                          |
+| **Feature Points**            | Specific points in an image used for tracking and estimation.                                |
+| **Frame Rate**                | The number of frames displayed per second in a video.                                        |
+| **Interpolation**             | A method of estimating unknown values that fall between known values.                        |
+| **KMeans Clustering**         | A clustering algorithm used to partition data into K clusters.                               |
+| **Optical Flow**              | A method used to estimate the motion of objects between consecutive frames.                  |
+| **Perspective Transformation**| A mathematical operation that maps points from one plane to another.                        |
+| **Pre-trained Model**         | An AI model that has been previously trained on a large dataset.                             |
+| **Shi-Tomasi Corner Detection**| An algorithm used to detect corners in an image.                                            |
+| **Stub File**                 | A file containing precomputed data used to speed up processing.                              |
+| **YOLO (You Only Look Once)** | A real-time object detection system.                                                         |
+
+### Domain-Oriented Expressions
+
+| Term                      | Definition                                                                                   |
+|---------------------------|----------------------------------------------------------------------------------------------|
+| **Ball Possession**       | The determination of which player has control of the ball.                                    |
+| **Court Dimensions**      | The width and length of the sports court.                                                     |
+| **Distance Covered**      | The total distance traveled by a player.                                                      |
+| **Player Detection**      | The identification and localization of players in video frames.                               |
+| **Player Team Assignment**| The process of assigning players to their respective teams based on their uniform colors.     |
+| **Speed Estimation**      | The calculation of a player's speed based on their movement across frames.                    |
+| **Team Color**            | The color associated with a player's team.                                                    |
+| **Track**                 | The path or trajectory of an object (player or ball) in the video.                            |
+| **Transformed Position**  | The position of an object after applying perspective transformation.                          |
+| **Video Annotation**      | The process of adding visual markers to video frames to highlight important information.      |
