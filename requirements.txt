@@ -1,4 +1,5 @@
 ultralytics
+roboflow
 supervision
 OpenCV-python
 NumPy
