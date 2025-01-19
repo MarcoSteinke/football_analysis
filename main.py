@@ -8,6 +8,7 @@ from camera_movement_estimator import CameraMovementEstimator
 from view_transformer import ViewTransformer
 from speed_and_distance_estimator import SpeedAndDistance_Estimator
 from report import Report
+from pass_detector import PassDetector
 
 
 def main():
@@ -73,7 +74,12 @@ def main():
 
     # Generate Report
     report = Report(input_file_name)
-    report.generate_report(tracks)
+    raw_report = report.generate_report(tracks)
+    report.save_report()
+
+    # Estimate passes
+    pass_detector = PassDetector()
+    passes = pass_detector.determine_passes(raw_report)
 
     # Draw output 
     ## Draw object Tracks
