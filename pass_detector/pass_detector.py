@@ -3,6 +3,8 @@ sys.path.append('../')
 
 import nanoid
 
+min_pass_possession_frames = 5
+
 class PassDetector():
 
     def __init__(self):
@@ -10,64 +12,34 @@ class PassDetector():
     
     def determine_passes(self, raw_report):
         passes = []
-        pass_id_counter = 1
+        ball_possessor = None
+        from_player = None
+        possessing_team = None
+        ball_possession_frames = 0
+        pass_candidate = False
 
         for entry in raw_report:
-            for player_id, player_data in team_data.items():
-                ball_possession_frames = []
-                for frame_num, frame_data in enumerate(player_data):
-                    if frame_data.get('has_ball', False):
-                        ball_possession_frames.append(frame_num)
-                    else:
-                        if len(ball_possession_frames) >= 5:
-                            start_frame = ball_possession_frames[0]
-                            end_frame = ball_possession_frames[-1]
-                            frames = end_frame - start_frame + 1
-                            pass_type = self.determine_pass_type(frames)
-                            pass_id = nanoid.generate(size=10)
-                            passes.append({
-                                "team": team,
-                                "from_player": player_id,
-                                "to_player": None,  # To be filled later
-                                "start_frame": start_frame,
-                                "end_frame": end_frame,
-                                "frames": frames,
-                                "pass_type": pass_type,
-                                "pass_id": pass_id
-                            })
-                        ball_possession_frames = []
 
-                if len(ball_possession_frames) >= 5:
-                    start_frame = ball_possession_frames[0]
-                    end_frame = ball_possession_frames[-1]
-                    frames = end_frame - start_frame + 1
-                    pass_type = self.determine_pass_type(frames)
-                    pass_id = nanoid.generate(size=10)
-                    passes.append({
-                        "team": team,
-                        "from_player": player_id,
-                        "to_player": None,  # To be filled later
-                        "start_frame": start_frame,
-                        "end_frame": end_frame,
-                        "frames": frames,
-                        "pass_type": pass_type,
-                        "pass_id": pass_id
-                    })
+            if pass_candidate and ball_possession_frames >= min_pass_possession_frames:
+                passes.append({
+                    "team": possessing_team,
+                    "from_player": from_player,
+                    "to_player": entry["player"],
+                    "pass_id": nanoid.generate(size=10)
+                })
+                pass_candidate = False
+                ball_possession_frames = 0
 
-        # Determine the receiver of the pass
-        for i in range(len(passes) - 1):
-            if passes[i]["team"] == passes[i + 1]["team"]:
-                passes[i]["to_player"] = passes[i + 1]["from_player"]
-
-        # Remove incomplete passes
-        passes = [p for p in passes if p["to_player"] is not None]
+            if ball_possessor == entry["player"] and possessing_team == entry["team"]:
+                ball_possession_frames += 1
+            else:
+                if possessing_team == entry["team"] and ball_possession_frames >= min_pass_possession_frames:
+                    pass_candidate = True
+                    from_player = ball_possessor
+                else:
+                    pass_candidate = False
+                ball_possessor = entry["player"]
+                possessing_team = entry["team"]
+                ball_possession_frames = 1
 
         return passes
-
-    def determine_pass_type(self, frames):
-        if 5 <= frames <= 10:
-            return "short"
-        elif 11 <= frames <= 20:
-            return "medium"
-        else:
-            return "long"
