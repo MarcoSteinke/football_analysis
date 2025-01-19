@@ -48,17 +48,46 @@ The solution involves reading a video file, processing it through various compon
 
 ### 4.1 Computer Vision
 
-#### AI-driven project goals
+#### 4.1.1 AI-driven project goals
 
 The goal of this project is to detect and track players, referees, and footballs in a video using YOLO, one of the best AI object detection models available. We will also train the model to improve its performance. Additionally, we will assign players to teams based on the colors of their t-shirts using Kmeans for pixel segmentation and clustering. With this information, we can measure a team's ball acquisition percentage in a match. We will also use optical flow to measure camera movement between frames, enabling us to accurately measure a player's movement. Furthermore, we will implement perspective transformation to represent the scene's depth and perspective, allowing us to measure a player's movement in meters rather than pixels. Finally, we will calculate a player's speed and the distance covered. This project covers various concepts and addresses real-world problems, making it suitable for both beginners and experienced machine learning engineers.
 
-#### AI Features
+#### 4.1.2 AI Features
 
 * YOLO: AI object detection model
 * Kmeans: Pixel segmentation and clustering to detect t-shirt color
 * Optical Flow: Measure camera movement
 * Perspective Transformation: Represent scene depth and perspective
 * Speed and distance calculation per player
+
+#### 4.1.3 Player Detector
+
+The player detector shall detect the players on the field. We are also interested in getting the team which a player belongs to.
+Additionally we want to understand how fast a player is moving and if a player went outside of the camera view, we want to recognize
+him or her as soon as the player re-enters the camera view. This is called **object persistence**
+
+We achieve this by using the following methods:
+
+* YOLO: AI object detection model
+* Kmeans: Pixel segmentation and clustering to detect t-shirt color
+* Speed and distance calculation per player based on frames
+
+#### 4.1.4 Pass detector
+
+We want to be able to detect passes between players and register as an event. Passes can either succeed or fail. Therefore there are
+different ways in detecting passes, some providing viable detections for successful and failed passes and some providing detections
+for either successful or failed passes.
+
+In this state of the project we use a combination of the **Player Ball Assigner** and the given frames, extracted from the input video.
+Using both we can first generate a report for the game which includes all players which possessed the ball during the game. Then we can
+remove faulty detections by defining a ball possession as a player possessing the ball for `>= N` frames. Then we can filter all possessions which were
+shorter than that and find changes in the ball possessing between players of the same team with at least `N` frames of ball possession.
+
+This method works for succeeded passes, but when a pass starts at a player of team A and results in ball possession of team B we can not decide if
+this is the result of a failed pass, or of a tackle.
+
+To "tackle" this problem, we may detect this event and check the distance between the `passer` and the `receiver`, because if this distance
+is relatively low, this may indicate that the ball possession was interrupted due to a tackle.
 
 ## 5. Building Block View
 
