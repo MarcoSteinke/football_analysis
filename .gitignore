@@ -8,3 +8,4 @@ training/football-players-detection-1/football-players-detection-1
 input_videos
 output_videos
 models
+*.log
