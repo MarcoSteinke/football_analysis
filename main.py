@@ -7,11 +7,13 @@ from player_ball_assigner import PlayerBallAssigner
 from camera_movement_estimator import CameraMovementEstimator
 from view_transformer import ViewTransformer
 from speed_and_distance_estimator import SpeedAndDistance_Estimator
+from report import Report
 
 
 def main():
+    input_file_name="input_videos/sample.mp4"
     # Read Video
-    video_frames = read_video('input_videos/sample.mp4')
+    video_frames = read_video(input_file_name)
 
     # Initialize Tracker
     tracker = Tracker('models/best.pt')
@@ -69,6 +71,9 @@ def main():
             team_ball_control.append(team_ball_control[-1])
     team_ball_control= np.array(team_ball_control)
 
+    # Generate Report
+    report = Report(input_file_name)
+    report.generate_report(tracks)
 
     # Draw output 
     ## Draw object Tracks
