@@ -89,6 +89,15 @@ this is the result of a failed pass, or of a tackle.
 To "tackle" this problem, we may detect this event and check the distance between the `passer` and the `receiver`, because if this distance
 is relatively low, this may indicate that the ball possession was interrupted due to a tackle.
 
+**Known issue**:
+
+* This method uses frames to define a minimum ball possession to reduce false positives, but due to different cameras being used
+to record games, different framerates will break this method of determining the ball possession
+* Long passes cross a lot of players over a greater amount of frames which can lead to ball possession errors
+* The player number may be incorrectly determined which results in passes to the player him- or herself
+* Ball speed could be used to determine passes rather than a sequence of frames
+* The passes need to be joined into the report. Therefore the frame numbers must be respected
+
 ## 5. Building Block View
 
 ### 5.1. Overall System Architecture
